@@ -1,0 +1,17 @@
+body{
+    margin:0;
+    background:#87CEEB;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    font-family:sans-serif;
+}
+
+h1{
+    color:white;
+}
+
+canvas{
+    background: #AEEEEE;
+    border:4px solid #333;
+}
