@@ -18,3 +18,23 @@ canvas {
     margin: 0 auto;
     touch-action: none;
 }
+
+button {
+    position: fixed;
+    bottom: 20px;
+    width: 80px;
+    height: 80px;
+    font-size: 30px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0,0,0,0.5);
+    color: white;
+}
+
+#leftBtn {
+    left: 30px;
+}
+
+#rightBtn {
+    right: 30px;
+}

@@ -75,6 +75,26 @@ let gameState = "title";
 // キー入力
 // =======================
 const keys = {};
+const input = {
+    left: false,
+    right: false
+};
+
+document.getElementById("leftBtn").addEventListener("touchstart", () => {
+    input.left = true;
+});
+
+document.getElementById("leftBtn").addEventListener("touchend", () => {
+    input.left = false;
+});
+
+document.getElementById("rightBtn").addEventListener("touchstart", () => {
+    input.right = true;
+});
+
+document.getElementById("rightBtn").addEventListener("touchend", () => {
+    input.right = false;
+});
 
 document.addEventListener("keyup", (e) => {
     keys[e.key] = false;
@@ -121,38 +141,15 @@ canvas.addEventListener("touchstart", (e) => {
 });
 
 // =======================
-// タッチ操作
-// =======================
-canvas.addEventListener("touchmove", (e) => {
-
-    if (gameState !== "playing") return;
-
-    e.preventDefault();
-
-    const rect = canvas.getBoundingClientRect();
-
-    const touchX = e.touches[0].clientX - rect.left;
-
-    player.x = touchX - player.width / 2;
-
-    if (player.x < 0) player.x = 0;
-
-    if (player.x + player.width > canvas.width) {
-        player.x = canvas.width - player.width;
-    }
-
-});
-
-// =======================
 // プレイヤー更新
 // =======================
 function updatePlayer() {
 
-    if (keys["ArrowLeft"] && player.x > 0) {
+    if ((keys["ArrowLeft"] || input.left) && player.x > 0) {
         player.x -= player.speed;
     }
 
-    if (keys["ArrowRight"] && player.x + player.width < canvas.width) {
+    if ((keys["ArrowRight"] || input.right) && player.x + player.width < canvas.width) {
         player.x += player.speed;
     }
 }
