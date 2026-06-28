@@ -30,21 +30,14 @@ function createObject(emoji, score, speed, x, y) {
     };
 }
 
-// =======================
-// 落下物一覧
-// =======================
-const fallingObjects = [
-    createObject("🍣", 1, 4, 100, 0),
-    createObject("🍣", 1, 4, 250, -250),
-    createObject("🍣", 1, 4, 450, -500),
-    createObject("🌶️", -3, 5, 300, -150)
-];
+const fallingObjects = [];
 
 // =======================
 // ゲーム情報
 // =======================
 let score = 0;
 let time = 60;
+let level = 1;
 
 // =======================
 // コンボ
@@ -517,29 +510,53 @@ function restartGame() {
     }
 }
 
+function generateObjects() {
+
+    const baseSpeed = 4 + level * 0.4;
+
+    const objects = [
+        createObject("🍣", 1, baseSpeed, 100, 0),
+        createObject("🍣", 1, baseSpeed, 250, -200),
+        createObject("🍣", 1, baseSpeed, 450, -400)
+    ];
+
+    if (level >= 2) {
+        objects.push(
+            createObject("🍤", 2, baseSpeed + 0.5, 150, -300)
+        );
+    }
+
+    if (level >= 3) {
+        objects.push(
+            createObject("🌶️", -3, baseSpeed + 1, 300, -500)
+        );
+    }
+
+    if (level >= 4) {
+        objects.push(
+            createObject("🍙", 3, baseSpeed + 1.5, 200, -600)
+        );
+    }
+
+    return objects;
+}
+
 // =======================
 // ゲームをリセット
 // =======================
 function resetGame() {
 
-    // スコアを戻す
     score = 0;
-
-    // タイマーを戻す
-    time = 10;
-
-    // コンボ変数を戻す
+    time = 60;
     combo = 0;
 
+    level = 1;
     gameState = "playing";
 
     scoreEffects.length = 0;
 
-    // 落下物を初期位置へ戻す
-    for (const object of fallingObjects) {
-        resetObject(object);
-    }
-
+    fallingObjects.length = 0;
+    fallingObjects.push(...generateObjects());
 }
 
 function drawGame() {
@@ -597,6 +614,42 @@ setInterval(() => {
 
         time--;
 
+        // ★レベルアップ
+        if (time <= 50 && lastLevelTime === 60) {
+            level++;
+            fallingObjects.length = 0;
+            fallingObjects.push(...generateObjects());
+            lastLevelTime = 50;
+        }
+
+        if (time <= 40 && lastLevelTime === 50) {
+            level++;
+            fallingObjects.length = 0;
+            fallingObjects.push(...generateObjects());
+            lastLevelTime = 40;
+        }
+
+        if (time <= 30 && lastLevelTime === 40) {
+            level++;
+            fallingObjects.length = 0;
+            fallingObjects.push(...generateObjects());
+            lastLevelTime = 30;
+        }
+
+        if (time <= 20 && lastLevelTime === 30) {
+            level++;
+            fallingObjects.length = 0;
+            fallingObjects.push(...generateObjects());
+            lastLevelTime = 20;
+        }
+
+        if (time <= 10 && lastLevelTime === 20) {
+            level++;
+            fallingObjects.length = 0;
+            fallingObjects.push(...generateObjects());
+            lastLevelTime = 10;
+        }
+
         if (time <= 0) {
             time = 0;
 
@@ -604,7 +657,6 @@ setInterval(() => {
 
             gameState = "gameOver";
         }
-
     }
 
 }, 1000);
