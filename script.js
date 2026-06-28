@@ -50,6 +50,7 @@ let time = 60;
 // コンボ
 // =======================
 let combo = 0;
+let comboPop = 0;
 
 // =======================
 // 点数エフェクト
@@ -226,6 +227,7 @@ function handleCollision(object) {
     if (object.score > 0) {
 
         combo++;
+        comboPop = 20;
 
         // 5コンボごとにボーナス
         if (combo % 5 === 0) {
@@ -244,6 +246,7 @@ function handleCollision(object) {
     else {
 
         combo = 0;
+        comboPop = 0;
 
     }
 
@@ -416,13 +419,15 @@ function drawScoreEffects() {
 // =======================
 function drawCombo() {
 
-    if (combo < 2) {
-        return;
-    }
+    if (combo < 2) return;
 
-    ctx.fillStyle = "orange";
-    ctx.font = "40px Arial";
     ctx.textAlign = "center";
+
+    // 拡大演出（ポップ）
+    let size = 40 + comboPop;
+
+    ctx.font = size + "px Arial";
+    ctx.fillStyle = "orange";
 
     ctx.fillText(
         combo + " COMBO!",
@@ -432,6 +437,9 @@ function drawCombo() {
 
     ctx.textAlign = "left";
 
+    if (comboPop > 0) {
+        comboPop -= 2;
+    }
 }
 
 // =======================
