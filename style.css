@@ -21,20 +21,32 @@ canvas {
 
 button {
     position: fixed;
-    bottom: 20px;
-    width: 80px;
-    height: 80px;
-    font-size: 30px;
+    bottom: 25px;
+
+    width: 140px;
+    height: 140px;
+
+    font-size: 60px;
+
     border-radius: 50%;
     border: none;
-    background: rgba(0,0,0,0.5);
+
+    background: rgba(0,0,0,0.65);
     color: white;
+
+    touch-action: manipulation;
+
+    box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+}
+
+button:active {
+    transform: scale(0.85);
 }
 
 #leftBtn {
-    left: 30px;
+    left: 25px;
 }
 
 #rightBtn {
-    right: 30px;
+    right: 25px;
 }
