@@ -45,7 +45,14 @@ const fallingObjects = [
 // =======================
 let score = 0;
 let time = 60;
-let gameOver = false;
+
+// ブラウザに保存されているハイスコアを読み込む
+let highScore = Number(localStorage.getItem("highScore")) || 0;
+
+// =======================
+// ゲーム状態
+// =======================
+let gameState = "title";
 
 // =======================
 // キー入力
@@ -56,9 +63,17 @@ document.addEventListener("keydown", (e) => {
 
     keys[e.key] = true;
 
-    // ゲームオーバー中にRキーでリスタート
-    if (gameOver && (e.key === "r" || e.key === "R")) {
+    // タイトル画面でスタート
+    if (gameState === "title" && e.key === "Enter") {
         resetGame();
+    }
+
+    // ゲームオーバー中にRキーでリスタート
+    if (gameState === "gameOver" &&
+        (e.key === "r" || e.key === "R")) {
+
+        resetGame();
+
     }
 
 });
@@ -196,6 +211,17 @@ function drawTimer() {
 }
 
 // =======================
+// ハイスコア描画
+// =======================
+function drawHighScore() {
+
+    ctx.fillStyle = "black";
+    ctx.font = "30px Arial";
+    ctx.fillText("ハイスコア : " + highScore, 20, 80);
+
+}
+
+// =======================
 // ゲームオーバー画面
 // =======================
 function drawGameOver() {
@@ -217,6 +243,45 @@ function drawGameOver() {
 }
 
 // =======================
+// タイトル画面
+// =======================
+function drawTitle() {
+
+    // 背景
+    ctx.fillStyle = "#87CEEB";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // タイトル
+    ctx.fillStyle = "white";
+    ctx.font = "60px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("🍣 寿司キャッチ！", canvas.width / 2, 250);
+
+    // 説明
+    ctx.font = "35px Arial";
+    ctx.fillText("Enterキーでスタート", canvas.width / 2, 400);
+
+    // 左寄せに戻す（他の描画に影響しないように）
+    ctx.textAlign = "left";
+}
+
+// =======================
+// ハイスコア更新
+// =======================
+function updateHighScore() {
+
+    if (score > highScore) {
+
+        highScore = score;
+
+        // ブラウザに保存
+        localStorage.setItem("highScore", highScore);
+
+    }
+
+}
+
+// =======================
 // ゲームをリセット
 // =======================
 function resetGame() {
@@ -225,10 +290,9 @@ function resetGame() {
     score = 0;
 
     // タイマーを戻す
-    time = 60;
+    time = 10;
 
-    // ゲーム再開
-    let gameState = "title";
+    gameState = "playing";
 
     // 落下物を初期位置へ戻す
     for (const object of fallingObjects) {
@@ -237,17 +301,20 @@ function resetGame() {
 
 }
 
-// =======================
-// 画面描画
-// =======================
 function drawGame() {
+
+    if (gameState === "title") {
+        drawTitle();
+        return;
+    }
 
     drawObjects();
     drawPlayer();
     drawScore();
+    drawHighScore();
     drawTimer();
 
-if (gameState === "playing") {
+    if (gameState === "gameOver") {
         drawGameOver();
     }
 
@@ -260,10 +327,12 @@ function gameLoop() {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    if (!gameOver) {
+    if (gameState === "playing") {
+
         updatePlayer();
         updateObjects();
         checkCollision();
+    
     }
 
     drawGame();
@@ -277,13 +346,16 @@ function gameLoop() {
 // =======================
 setInterval(() => {
 
-    if (!gameOver) {
+    if (gameState === "playing") {
 
         time--;
 
         if (time <= 0) {
             time = 0;
-            gameOver = true;
+
+            updateHighScore();
+            
+            gameState = "gameOver";
         }
 
     }
