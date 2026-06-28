@@ -95,12 +95,26 @@ document.addEventListener("keydown", (e) => {
 
     keys[e.key] = true;
 
+    // ゲーム開始
     if (e.key === "Enter") {
-        if (gameState !== "playing") resetGame();
+        startGame();
     }
 
+    // リスタート
     if (e.key.toLowerCase() === "r") {
-        if (gameState === "gameOver") resetGame();
+        restartGame();
+    }
+
+});
+
+canvas.addEventListener("touchstart", (e) => {
+
+    if (gameState === "title") {
+        startGame();
+    }
+
+    if (gameState === "gameOver") {
+        restartGame();
     }
 
 });
@@ -110,7 +124,7 @@ document.addEventListener("keydown", (e) => {
 // =======================
 canvas.addEventListener("touchmove", (e) => {
 
-    if (gameState !== "playing") return; // ←追加重要
+    if (gameState !== "playing") return;
 
     e.preventDefault();
 
@@ -437,7 +451,7 @@ function drawGameOver() {
     ctx.fillText("スコア : " + score, 180, 430);
 
     ctx.font = "28px Arial";
-    ctx.fillText("Rキーでリスタート！", 135, 500);
+    ctx.fillText("タップ or Rで再挑戦！", 135, 500);
 
 }
 
@@ -458,7 +472,7 @@ function drawTitle() {
 
     // 説明
     ctx.font = "35px Arial";
-    ctx.fillText("Enterキーでスタート", canvas.width / 2, 400);
+    ctx.fillText("タップ or Enterでスタート", canvas.width / 2, 400);
 
     // 左寄せに戻す（他の描画に影響しないように）
     ctx.textAlign = "left";
@@ -478,6 +492,24 @@ function updateHighScore() {
 
     }
 
+}
+
+// =======================
+// ゲームを開始
+// =======================
+function startGame() {
+    if (gameState === "title") {
+        resetGame();
+    }
+}
+
+// =======================
+// ゲームを再開
+// =======================
+function restartGame() {
+    if (gameState === "gameOver") {
+        resetGame();
+    }
 }
 
 // =======================
