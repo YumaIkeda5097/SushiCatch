@@ -610,53 +610,14 @@ function gameLoop() {
 // =======================
 setInterval(() => {
 
-    if (gameState === "playing") {
+    if (gameState !== "playing") return;
 
-        time--;
+    time--;
 
-        // ★レベルアップ
-        if (time <= 50 && lastLevelTime === 60) {
-            level++;
-            fallingObjects.length = 0;
-            fallingObjects.push(...generateObjects());
-            lastLevelTime = 50;
-        }
-
-        if (time <= 40 && lastLevelTime === 50) {
-            level++;
-            fallingObjects.length = 0;
-            fallingObjects.push(...generateObjects());
-            lastLevelTime = 40;
-        }
-
-        if (time <= 30 && lastLevelTime === 40) {
-            level++;
-            fallingObjects.length = 0;
-            fallingObjects.push(...generateObjects());
-            lastLevelTime = 30;
-        }
-
-        if (time <= 20 && lastLevelTime === 30) {
-            level++;
-            fallingObjects.length = 0;
-            fallingObjects.push(...generateObjects());
-            lastLevelTime = 20;
-        }
-
-        if (time <= 10 && lastLevelTime === 20) {
-            level++;
-            fallingObjects.length = 0;
-            fallingObjects.push(...generateObjects());
-            lastLevelTime = 10;
-        }
-
-        if (time <= 0) {
-            time = 0;
-
-            updateHighScore();
-
-            gameState = "gameOver";
-        }
+    if (time <= 0) {
+        time = 0;
+        updateHighScore();
+        gameState = "gameOver";
     }
 
 }, 1000);
