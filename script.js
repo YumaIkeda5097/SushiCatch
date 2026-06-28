@@ -47,6 +47,11 @@ let score = 0;
 let time = 60;
 
 // =======================
+// コンボ
+// =======================
+let combo = 0;
+
+// =======================
 // 点数エフェクト
 // =======================
 const scoreEffects = [];
@@ -70,27 +75,57 @@ let gameState = "title";
 // =======================
 const keys = {};
 
-document.addEventListener("keydown", (e) => {
+document.addEventListener("keyup", (e) => {
+    keys[e.key] = false;
+});
 
-    keys[e.key] = true;
+canvas.addEventListener("touchstart", (e) => {
 
-    // タイトル画面でスタート
-    if (gameState === "title" && e.key === "Enter") {
+    if (gameState === "title") {
         resetGame();
     }
 
-    // ゲームオーバー中にRキーでリスタート
-    if (gameState === "gameOver" &&
-        (e.key === "r" || e.key === "R")) {
-
+    if (gameState === "gameOver") {
         resetGame();
-
     }
 
 });
 
-document.addEventListener("keyup", (e) => {
-    keys[e.key] = false;
+document.addEventListener("keydown", (e) => {
+
+    keys[e.key] = true;
+
+    if (e.key === "Enter") {
+        if (gameState !== "playing") resetGame();
+    }
+
+    if (e.key.toLowerCase() === "r") {
+        if (gameState === "gameOver") resetGame();
+    }
+
+});
+
+// =======================
+// タッチ操作
+// =======================
+canvas.addEventListener("touchmove", (e) => {
+
+    if (gameState !== "playing") return; // ←追加重要
+
+    e.preventDefault();
+
+    const rect = canvas.getBoundingClientRect();
+
+    const touchX = e.touches[0].clientX - rect.left;
+
+    player.x = touchX - player.width / 2;
+
+    if (player.x < 0) player.x = 0;
+
+    if (player.x + player.width > canvas.width) {
+        player.x = canvas.width - player.width;
+    }
+
 });
 
 // =======================
@@ -137,36 +172,83 @@ function checkCollision() {
             object.y < player.y + player.height &&
             object.y + object.height > player.y;
 
-            if (hit) {
-
-                score += object.score;
-
-                addScoreEffect(
-                    object.x,
-                    object.y,
-                    object.score
-                );
-
-                // 寿司なら良い音
-                if (object.score > 0) {
-                
-                    catchSound.currentTime = 0;
-                    catchSound.play();
-                
-                }
-                // わさびなら悪い音
-                else {
-                
-                    missSound.currentTime = 0;
-                    missSound.play();
-                
-                }
-                
-                resetObject(object);
-            
-            }
+        if (hit) {
+            handleCollision(object);
+        }
 
     }
+
+}
+
+// =======================
+// 衝突したときの処理
+// =======================
+function handleCollision(object) {
+
+    // スコア加算
+    score += object.score;
+
+    // 点数エフェクト
+    if (object.score > 0) {
+
+        addScoreEffect(
+            object.x,
+            object.y,
+            "+1"
+        );
+
+    }
+    else {
+
+        addScoreEffect(
+            object.x,
+            object.y,
+            "-3"
+        );
+
+    }
+
+    // コンボ処理
+    if (object.score > 0) {
+
+        combo++;
+
+        // 5コンボごとにボーナス
+        if (combo % 5 === 0) {
+
+            score += 5;
+
+            addScoreEffect(
+                player.x + player.width / 2,
+                player.y - 20,
+                "+5 BONUS!"
+            );
+
+        }
+
+    }
+    else {
+
+        combo = 0;
+
+    }
+
+    // 効果音
+    if (object.score > 0) {
+
+        catchSound.currentTime = 0;
+        catchSound.play();
+
+    }
+    else {
+
+        missSound.currentTime = 0;
+        missSound.play();
+
+    }
+
+    // 落下物を戻す
+    resetObject(object);
 
 }
 
@@ -204,13 +286,13 @@ function resetObject(object) {
 // =======================
 // 点数エフェクト追加
 // =======================
-function addScoreEffect(x, y, score) {
+function addScoreEffect(x, y, text) {
 
     scoreEffects.push({
 
         x: x,
         y: y,
-        score: score,
+        text: text,
         life: 60
 
     });
@@ -302,16 +384,39 @@ function drawScoreEffects() {
 
     for (const effect of scoreEffects) {
 
-        if (effect.score > 0) {
+        if (effect.text.startsWith("+")) {
             ctx.fillStyle = "green";
-            ctx.fillText("+" + effect.score, effect.x, effect.y);
         }
         else {
             ctx.fillStyle = "red";
-            ctx.fillText(effect.score, effect.x, effect.y);
         }
+        
+        ctx.fillText(effect.text, effect.x, effect.y);
 
     }
+
+}
+
+// =======================
+// コンボ描画
+// =======================
+function drawCombo() {
+
+    if (combo < 2) {
+        return;
+    }
+
+    ctx.fillStyle = "orange";
+    ctx.font = "40px Arial";
+    ctx.textAlign = "center";
+
+    ctx.fillText(
+        combo + " COMBO!",
+        canvas.width / 2,
+        120
+    );
+
+    ctx.textAlign = "left";
 
 }
 
@@ -386,7 +491,12 @@ function resetGame() {
     // タイマーを戻す
     time = 10;
 
+    // コンボ変数を戻す
+    combo = 0;
+
     gameState = "playing";
+
+    scoreEffects.length = 0;
 
     // 落下物を初期位置へ戻す
     for (const object of fallingObjects) {
@@ -410,6 +520,8 @@ function drawGame() {
     drawScore();
     drawHighScore();
     drawTimer();
+    
+    drawCombo();
 
     if (gameState === "gameOver") {
         drawGameOver();
