@@ -36,7 +36,7 @@ const fallingObjects = [];
 // ゲーム情報
 // =======================
 let score = 0;
-let time = 10;
+let time = 60;
 let level = 1;
 
 // =======================
@@ -162,6 +162,33 @@ function updateObjects() {
 
     }
 
+}
+
+function checkLevelUp() {
+
+    if (time === 50 && level === 1) {
+        level++;
+        fallingObjects.length = 0;
+        fallingObjects.push(...generateObjects());
+    }
+
+    if (time === 40 && level === 2) {
+        level++;
+        fallingObjects.length = 0;
+        fallingObjects.push(...generateObjects());
+    }
+
+    if (time === 30 && level === 3) {
+        level++;
+        fallingObjects.length = 0;
+        fallingObjects.push(...generateObjects());
+    }
+
+    if (time === 20 && level === 4) {
+        level++;
+        fallingObjects.length = 0;
+        fallingObjects.push(...generateObjects());
+    }
 }
 
 // =======================
@@ -547,7 +574,7 @@ function generateObjects() {
 function resetGame() {
 
     score = 0;
-    time = 10;
+    time = 60;
     combo = 0;
 
     level = 1;
@@ -596,6 +623,7 @@ function gameLoop() {
         updateObjects();
         checkCollision();
         updateScoreEffects();
+        checkLevelUp();
     
     }
 
