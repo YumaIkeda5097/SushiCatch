@@ -5,6 +5,15 @@ body{
     flex-direction:column;
     align-items:center;
     font-family:sans-serif;
+    touch-action: manipulation;
+}
+
+* {
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    -webkit-touch-callout: none;
 }
 
 h1{
@@ -20,6 +29,11 @@ canvas {
 }
 
 button {
+    -webkit-user-select: none;
+    user-select: none;
+
+    -webkit-touch-callout: none;
+    
     position: fixed;
     bottom: 25px;
 
