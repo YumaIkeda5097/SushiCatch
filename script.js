@@ -36,7 +36,7 @@ const fallingObjects = [];
 // ゲーム情報
 // =======================
 let score = 0;
-let time = 60;
+let time = 10;
 let level = 1;
 
 // =======================
@@ -547,7 +547,7 @@ function generateObjects() {
 function resetGame() {
 
     score = 0;
-    time = 60;
+    time = 10;
     combo = 0;
 
     level = 1;
