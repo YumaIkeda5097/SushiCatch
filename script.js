@@ -47,6 +47,11 @@ let score = 0;
 let time = 60;
 
 // =======================
+// 点数エフェクト
+// =======================
+const scoreEffects = [];
+
+// =======================
 // 効果音
 // =======================
 const catchSound = new Audio("sounds/catch.mp3");
@@ -136,6 +141,12 @@ function checkCollision() {
 
                 score += object.score;
 
+                addScoreEffect(
+                    object.x,
+                    object.y,
+                    object.score
+                );
+
                 // 寿司なら良い音
                 if (object.score > 0) {
                 
@@ -160,12 +171,49 @@ function checkCollision() {
 }
 
 // =======================
+// 点数エフェクト更新
+// =======================
+function updateScoreEffects() {
+
+    for (let i = scoreEffects.length - 1; i >= 0; i--) {
+
+        scoreEffects[i].y -= 1;
+
+        scoreEffects[i].life--;
+
+        if (scoreEffects[i].life <= 0) {
+
+            scoreEffects.splice(i, 1);
+
+        }
+
+    }
+
+}
+
+// =======================
 // 落下物を上に戻す
 // =======================
 function resetObject(object) {
 
     object.y = -40;
     object.x = Math.random() * (canvas.width - object.width);
+
+}
+
+// =======================
+// 点数エフェクト追加
+// =======================
+function addScoreEffect(x, y, score) {
+
+    scoreEffects.push({
+
+        x: x,
+        y: y,
+        score: score,
+        life: 60
+
+    });
 
 }
 
@@ -242,6 +290,28 @@ function drawHighScore() {
     ctx.fillStyle = "black";
     ctx.font = "30px Arial";
     ctx.fillText("ハイスコア : " + highScore, 20, 80);
+
+}
+
+// =======================
+// 点数エフェクト描画
+// =======================
+function drawScoreEffects() {
+
+    ctx.font = "28px Arial";
+
+    for (const effect of scoreEffects) {
+
+        if (effect.score > 0) {
+            ctx.fillStyle = "green";
+            ctx.fillText("+" + effect.score, effect.x, effect.y);
+        }
+        else {
+            ctx.fillStyle = "red";
+            ctx.fillText(effect.score, effect.x, effect.y);
+        }
+
+    }
 
 }
 
@@ -334,6 +404,9 @@ function drawGame() {
 
     drawObjects();
     drawPlayer();
+    
+    drawScoreEffects();
+    
     drawScore();
     drawHighScore();
     drawTimer();
@@ -356,6 +429,7 @@ function gameLoop() {
         updatePlayer();
         updateObjects();
         checkCollision();
+        updateScoreEffects();
     
     }
 
