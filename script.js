@@ -46,6 +46,12 @@ const fallingObjects = [
 let score = 0;
 let time = 60;
 
+// =======================
+// 効果音
+// =======================
+const catchSound = new Audio("sounds/catch.mp3");
+const missSound = new Audio("sounds/miss.mp3");
+
 // ブラウザに保存されているハイスコアを読み込む
 let highScore = Number(localStorage.getItem("highScore")) || 0;
 
@@ -126,10 +132,28 @@ function checkCollision() {
             object.y < player.y + player.height &&
             object.y + object.height > player.y;
 
-        if (hit) {
-            score += object.score;
-            resetObject(object);
-        }
+            if (hit) {
+
+                score += object.score;
+
+                // 寿司なら良い音
+                if (object.score > 0) {
+                
+                    catchSound.currentTime = 0;
+                    catchSound.play();
+                
+                }
+                // わさびなら悪い音
+                else {
+                
+                    missSound.currentTime = 0;
+                    missSound.play();
+                
+                }
+                
+                resetObject(object);
+            
+            }
 
     }
 
@@ -354,7 +378,7 @@ setInterval(() => {
             time = 0;
 
             updateHighScore();
-            
+
             gameState = "gameOver";
         }
 
